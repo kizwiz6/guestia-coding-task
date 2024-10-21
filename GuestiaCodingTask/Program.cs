@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Threading;
 
 namespace GuestiaCodingTask
 {
@@ -36,9 +37,11 @@ namespace GuestiaCodingTask
                 Console.WriteLine($"\nGuest Group: {group.Key} - Unregistered Guests: {group.Value.Count}");
                 Console.ResetColor(); // Reset color for subsequent text
 
+                int count = 1; // Counter for numbering guests
                 foreach (var guest in group.Value.OrderBy(g => g.LastName).ThenBy(g => g.FirstName)) // Sort alphabetically       
                 {
-                    Console.WriteLine($" - {guestFormatter.FormatGuestName(guest)}");
+                    Console.WriteLine($"    {count}. {guestFormatter.FormatGuestName(guest)}"); // Indentation and numbering for guest names
+                    count++;
                 }
             }
 
