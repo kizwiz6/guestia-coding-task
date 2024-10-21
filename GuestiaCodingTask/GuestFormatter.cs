@@ -1,17 +1,12 @@
 ﻿using GuestiaCodingTask.Data;
 using GuestiaCodingTask.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GuestiaCodingTask
 {
     /// <summary>
     /// Handles the formatting of guest names based on their group specification.
     /// </summary>
-    public class GuestFormatter
+    public class GuestFormatter : IGuestFormatter
     {
         /// <summary>
         /// Formats the guest's name based on the display format specified in the GuestGroup.

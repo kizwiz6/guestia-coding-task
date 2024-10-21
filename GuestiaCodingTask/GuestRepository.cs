@@ -1,17 +1,14 @@
 ﻿using GuestiaCodingTask.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GuestiaCodingTask
 {
     /// <summary>
     /// Handles database interactions, such as fetching unregistered guests.
     /// </summary>
-    public class GuestRepository
+    public class GuestRepository : IGuestRepository
     {
         /// <summary>
         /// Retrieves all guests that have not registered yet and groups them by their guest group name.
