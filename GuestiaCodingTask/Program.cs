@@ -13,68 +13,19 @@ namespace GuestiaCodingTask
         {
             try
             {
-                // Dependency injection
-                var serviceProvider = new ServiceCollection()
-                    .AddTransient<IGuestRepository, GuestRepository>()
-                    .AddTransient<IGuestFormatter, GuestFormatter>()
-                    .BuildServiceProvider();
-
-                // Resolve the services
+                var serviceProvider = ConfigureServices();
                 var guestRepository = serviceProvider.GetService<IGuestRepository>();
                 var guestFormatter = serviceProvider.GetService<IGuestFormatter>();
 
-                // Use the repository to get unregistered guests
-                if (guestRepository == null || guestFormatter == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    throw new InvalidOperationException("Failed to resolve dependencies.");
-                }
+                // Check if services were resolved successfully
+                ValidateServices(guestRepository, guestFormatter);
 
                 // Initialise the database
-                try
-                {
-                    DbInitialiser.CreateDb();
-                }
-                catch (Exception ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Error initialising the database: {ex.Message}");
-                    Console.ResetColor();
-                    return;
-                }
+                InitialiseDatabase();
 
-                // Use the repository to get unregistered guests
-                Dictionary<string, List<Guest>> groupedGuests;
-                try
-                {
-                    groupedGuests = guestRepository.GetUnregisteredGuestsGrouped();
-                }
-                catch (Exception ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Error retrieving unregistered guests: {ex.Message}");
-                    Console.ResetColor();
-                    return;
-                }
-
-                // Output the report
-                foreach (var group in groupedGuests)
-                {
-                    if (group.Key == "Standard")
-                        Console.ForegroundColor = ConsoleColor.Green; // Standard group colour
-                    else if (group.Key == "VIP")
-                        Console.ForegroundColor = ConsoleColor.Yellow; // VIP group colour
-
-                    Console.WriteLine($"\nGuest Group: {group.Key} - Unregistered Guests: {group.Value.Count}");
-                    Console.ResetColor();
-
-                    int count = 1; // Counter for numbering guests
-                    foreach (var guest in group.Value.OrderBy(g => g.LastName).ThenBy(g => g.FirstName)) // Sort alphabetically       
-                    {
-                        Console.WriteLine($"    {count}. {guestFormatter.FormatGuestName(guest)}"); // Indentation and numbering for guest names
-                        count++;
-                    }
-                }
+                // Retrieve and output the report
+                var groupedGuests = GetUnregisteredGuests(guestRepository);
+                OutputReport(groupedGuests, guestFormatter);
             }
             catch (Exception ex)
             {
@@ -88,6 +39,103 @@ namespace GuestiaCodingTask
                 Console.WriteLine("\nPress any key to exit.");
                 Console.ResetColor();
                 Console.ReadKey();
+            }
+        }
+
+        /// <summary>
+        /// Configures the services required by the application.
+        /// </summary>
+        /// <returns>A service provider with the configured services.</returns>
+        private static ServiceProvider ConfigureServices()
+        {
+            return new ServiceCollection()
+                .AddTransient<IGuestRepository, GuestRepository>()
+                .AddTransient<IGuestFormatter, GuestFormatter>()
+                .BuildServiceProvider();
+        }
+
+        /// <summary>
+        /// Validates that the required services were resolved successfully.
+        /// </summary>
+        /// <param name="guestRepository">The guest repository service.</param>
+        /// <param name="guestFormatter">The guest formatter service.</param>
+        private static void ValidateServices(IGuestRepository guestRepository, IGuestFormatter guestFormatter)
+        {
+            if (guestRepository == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error resolving IGuestRepository service.");
+                Console.ResetColor();
+                Environment.Exit(1);
+            }
+
+            if (guestFormatter == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error resolving IGuestFormatter service.");
+                Console.ResetColor();
+                Environment.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Initialises the database by creating the necessary tables and data.
+        /// </summary>
+        private static void InitialiseDatabase()
+        {
+            try
+            {
+                DbInitialiser.CreateDb();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error initialising the database: {ex.Message}");
+                Console.ResetColor();
+                Environment.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all unregistered guests grouped by their guest group name.
+        /// </summary>
+        /// <param name="guestRepository">The guest repository service.</param>
+        /// <returns>A dictionary where the key is the guest group name and the value is a list of unregistered guests in that group.</returns>
+        private static Dictionary<string, List<Guest>> GetUnregisteredGuests(IGuestRepository guestRepository)
+        {
+            try
+            {
+                return guestRepository.GetUnregisteredGuestsGrouped();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error retrieving unregistered guests: {ex.Message}");
+                Console.ResetColor();
+                Environment.Exit(1);
+                return null; // Unreachable, but included for compiler satisfaction
+            }
+        }
+
+        /// <summary>
+        /// Outputs a report of unregistered guests grouped by their guest group name.
+        /// </summary>
+        /// <param name="groupedGuests">A dictionary where the key is the guest group name and the value is a list of unregistered guests in that group.</param>
+        /// <param name="guestFormatter">The guest formatter service.</param>
+        private static void OutputReport(Dictionary<string, List<Guest>> groupedGuests, IGuestFormatter guestFormatter)
+        {
+            foreach (var group in groupedGuests)
+            {
+                Console.ForegroundColor = group.Key == "Standard" ? ConsoleColor.Green : ConsoleColor.Yellow;
+                Console.WriteLine($"\nGuest Group: {group.Key} - Unregistered Guests: {group.Value.Count}");
+                Console.ResetColor();
+
+                int count = 1;
+                foreach (var guest in group.Value.OrderBy(g => g.LastName).ThenBy(g => g.FirstName))
+                {
+                    Console.WriteLine($"    {count}. {guestFormatter.FormatGuestName(guest)}");
+                    count++;
+                }
             }
         }
     }
