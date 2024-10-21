@@ -1,6 +1,7 @@
 ﻿using GuestiaCodingTask.Data;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace GuestiaCodingTask
 {
@@ -28,7 +29,7 @@ namespace GuestiaCodingTask
             foreach (var group in groupedGuests)
             {
                 Console.WriteLine($"Guest Group: {group.Key} - Unregistered Guests: {group.Value.Count}");
-                foreach (var guest in group.Value)
+                foreach (var guest in group.Value.OrderBy(g => g.LastName).ThenBy(g => g.FirstName)) // Sort alphabetically       
                 {
                     Console.WriteLine($" - {guestFormatter.FormatGuestName(guest)}");
                 }
