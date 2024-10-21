@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace GuestiaCodingTask.Data
 {
+    /// <summary>
+    /// Provides methods to initialise and populate the database.
+    /// </summary>
     class DbInitialiser
     {
         /// <summary>
@@ -27,7 +30,10 @@ namespace GuestiaCodingTask.Data
             }
         }
 
-
+        /// <summary>
+        /// Generates a list of guests to be added to the database.
+        /// </summary>
+        /// <returns>A list of <see cref="Guest"/> objects.</returns>
         private static List<Guest> GetGuestList()
         {
             var standardGuestGroup = new GuestGroup
