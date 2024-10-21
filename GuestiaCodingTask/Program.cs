@@ -28,8 +28,12 @@ namespace GuestiaCodingTask
             // Output the report
             foreach (var group in groupedGuests)
             {
-                Console.ForegroundColor = ConsoleColor.Cyan; // Colour for group names
-                Console.WriteLine($"Guest Group: {group.Key} - Unregistered Guests: {group.Value.Count}");
+                if (group.Key == "Standard")
+                    Console.ForegroundColor = ConsoleColor.Green; // Standard group color
+                else if (group.Key == "VIP")
+                    Console.ForegroundColor = ConsoleColor.Yellow; // VIP group color
+
+                Console.WriteLine($"\nGuest Group: {group.Key} - Unregistered Guests: {group.Value.Count}");
                 Console.ResetColor(); // Reset color for subsequent text
 
                 foreach (var guest in group.Value.OrderBy(g => g.LastName).ThenBy(g => g.FirstName)) // Sort alphabetically       
