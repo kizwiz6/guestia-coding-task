@@ -10,3 +10,7 @@ The Guest Management System is a console application designed to manage guest re
 - Outputs a neatly organised report to the console.
 - Implements dependency injection for better maintainability and testability.
 
+## Console Output
+Here is the console output for the application:
+
+![Console Output](https://github.com/kizwiz6/guestia-coding-task/blob/484d74da453cb7d0073001050be7677f1d9df612/GuestiaConsoleOutput.png?raw=true)
