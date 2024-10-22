@@ -15,6 +15,16 @@ namespace GuestiaCodingTask
         /// <returns>A formatted string representing the guest's name.</returns>
         public string FormatGuestName(Guest guest)
         {
+            // Check if guest is null
+            if (guest == null)
+            {
+                return "Unknown Guest";
+            }
+
+            // Handle potential null values in FirstName and LastName
+            var firstName = string.IsNullOrWhiteSpace(guest.FirstName) ? "Unknown" : guest.FirstName;
+            var lastName = string.IsNullOrWhiteSpace(guest.LastName) ? "Unknown" : guest.LastName;
+
             var formatType = guest.GuestGroup?.NameDisplayFormat;
 
             return formatType switch
