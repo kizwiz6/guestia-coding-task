@@ -33,5 +33,27 @@ namespace GuestiaCodingTask.Tests
             // Assert
             Assert.Equal("Unknown Guest", result);
         }
+
+        /// <summary>
+        /// Tests the FormatGuestName method when the first name of the guest is null.
+        /// It should return the last name formatted with "K." as the first initial.
+        /// </summary>
+        [Fact]
+        public void FormatGuestName_WithNullFirstName_ReturnsUnknownForFirstName()
+        {
+            // Arrange
+            var guest = new Guest
+            {
+                FirstName = null,
+                LastName = "Emery",
+                GuestGroup = new GuestGroup { NameDisplayFormat = NameDisplayFormatType.LastNameCommaFirstNameInitial }
+            };
+
+            // Act
+            var result = _guestFormatter.FormatGuestName(guest);
+
+            // Assert
+            Assert.Equal("Emery, N/A.", result); // Assuming you expect "U." for Unknown
+        }
     }
 }

@@ -22,16 +22,17 @@ namespace GuestiaCodingTask
             }
 
             // Handle potential null values in FirstName and LastName
-            var firstName = string.IsNullOrWhiteSpace(guest.FirstName) ? "Unknown" : guest.FirstName;
-            var lastName = string.IsNullOrWhiteSpace(guest.LastName) ? "Unknown" : guest.LastName;
+            var firstName = string.IsNullOrWhiteSpace(guest.FirstName) ? "N/A." : $"{guest.FirstName[0]}.";
+            var lastName = string.IsNullOrWhiteSpace(guest.LastName) ? "UNKNOWN" : guest.LastName;
 
+            // Get the display format type, using a safe fallback if null
             var formatType = guest.GuestGroup?.NameDisplayFormat;
 
             return formatType switch
             {
-                NameDisplayFormatType.UpperCaseLastNameSpaceFirstName => $"{guest.LastName.ToUpper()} {guest.FirstName}",
-                NameDisplayFormatType.LastNameCommaFirstNameInitial => $"{guest.LastName}, {guest.FirstName[0]}.",
-                _ => $"{guest.FirstName} {guest.LastName}" // Default case
+                NameDisplayFormatType.UpperCaseLastNameSpaceFirstName => $"{lastName.ToUpper()} {guest.FirstName ?? "UNKNOWN"}",
+                NameDisplayFormatType.LastNameCommaFirstNameInitial => $"{lastName}, {firstName}",
+                _ => $"{guest.FirstName ?? "UNKNOWN"} {lastName}" // Default case if format is not recognised
             };
         }
     }
